@@ -15,6 +15,7 @@ export default function SubmitPage() {
     long_description: "",
     pricing: "Free",
   });
+  const [customCategory, setCustomCategory] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -29,8 +30,11 @@ export default function SubmitPage() {
     setSubmitting(true);
     setErrorMsg("");
 
+    const finalCategory = form.category === "Other" ? customCategory.trim() : form.category;
+
     const { error } = await supabase.from("models").insert({
       ...form,
+      category: finalCategory,
       created_by: user.id,
     });
 
@@ -49,6 +53,7 @@ export default function SubmitPage() {
       long_description: "",
       pricing: "Free",
     });
+    setCustomCategory("");
   }
 
   return (
@@ -56,7 +61,7 @@ export default function SubmitPage() {
       <div className="submit-head">
         <div className="eyebrow">Model Submission</div>
         <h2>List Your AI Model</h2>
-        <p>Submit your model for the community to try and vote on.</p>
+        <p>Submit your model for the community to try and vote on. Every submission is reviewed before it goes live.</p>
       </div>
 
       {!user && (
@@ -119,11 +124,23 @@ export default function SubmitPage() {
             onChange={(e) => update("category", e.target.value)}
           >
             <option value="">Select a category</option>
-            {["Writing", "Image", "Video", "Voice", "Coding", "Resume"].map((c) => (
+            {["Writing", "Image", "Video", "Voice", "Coding", "Resume", "Chatbot", "Marketing", "Productivity", "Education", "Other"].map((c) => (
               <option key={c}>{c}</option>
             ))}
           </select>
         </div>
+        {form.category === "Other" && (
+          <div className="field">
+            <label>Type your category</label>
+            <input
+              type="text"
+              placeholder="e.g. Legal AI, Fitness Coach..."
+              required
+              value={customCategory}
+              onChange={(e) => setCustomCategory(e.target.value)}
+            />
+          </div>
+        )}
         <div className="field">
           <label>
             Short Description <span className="hint">max 20 words</span>
