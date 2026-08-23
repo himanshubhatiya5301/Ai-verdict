@@ -3,9 +3,23 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/lib/useAuth";
+import { useVisitorStats } from "@/lib/useVisitor";
 import ModelCard from "@/components/ModelCard";
 
-const categories = ["All", "Writing", "Image", "Video", "Voice", "Coding", "Resume"];
+const categories = [
+  "All",
+  "Writing",
+  "Image",
+  "Video",
+  "Voice",
+  "Coding",
+  "Resume",
+  "Chatbot",
+  "Marketing",
+  "Productivity",
+  "Education",
+  "Other",
+];
 
 function pct(m) {
   const t = m.total_upvotes + m.total_downvotes;
@@ -14,6 +28,7 @@ function pct(m) {
 
 export default function HomePage() {
   const { user } = useAuth();
+  const { onlineCount, totalVisitors } = useVisitorStats();
   const [models, setModels] = useState([]);
   const [myVotes, setMyVotes] = useState({});
   const [activeCat, setActiveCat] = useState("All");
@@ -88,6 +103,7 @@ export default function HomePage() {
       <div className="stats-pill-wrap">
         <div className="stats-pill">
           <span className="dot"></span>
+          <b>🟢 {onlineCount} online</b> · <b>👥 {totalVisitors} visitors</b> ·{" "}
           <b>{models.length} models</b> · {totalVotes} votes cast ·{" "}
           <a href="/leaderboard">see leaderboard →</a>
         </div>
