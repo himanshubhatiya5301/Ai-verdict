@@ -27,13 +27,19 @@ export default function SubmitPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!user) return signInWithGoogle();
+
+    let cleanLink = form.demo_link.trim();
+    if (!/^https?:\/\//i.test(cleanLink)) {
+      cleanLink = "https://" + cleanLink;
+    }
+
     setSubmitting(true);
     setErrorMsg("");
-
     const finalCategory = form.category === "Other" ? customCategory.trim() : form.category;
 
     const { error } = await supabase.from("models").insert({
       ...form,
+      demo_link: cleanLink,
       category: finalCategory,
       created_by: user.id,
     });
