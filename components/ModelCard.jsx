@@ -9,11 +9,23 @@ function pct(m) {
   return t ? Math.round((m.total_upvotes / t) * 100) : 0;
 }
 
+function getDomain(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return null;
+  }
+}
+
 export default function ModelCard({ model, rank, myVote, onVoted }) {
   const { user, signInWithGoogle } = useAuth();
   const [busy, setBusy] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const p = pct(model);
   const total = model.total_upvotes + model.total_downvotes;
+
+  const domain = getDomain(model.demo_link);
+  const logoSrc = model.logo_url || (domain ? `https://logo.clearbit.com/${domain}?size=128` : null);
 
   async function castVote(type) {
     if (!user) {
@@ -43,7 +55,11 @@ export default function ModelCard({ model, rank, myVote, onVoted }) {
       {rank ? <div className="rank-badge">#{rank}</div> : null}
       <div className="card-top">
         <div className="logo">
-          {model.logo_url ? <img src={model.logo_url} alt="" /> : model.name[0]}
+          {logoSrc && !imgError ? (
+            <img src={logoSrc} alt="" onError={() => setImgError(true)} />
+          ) : (
+            model.name[0]
+          )}
         </div>
         <div>
           <div className="card-title">{model.name}</div>
