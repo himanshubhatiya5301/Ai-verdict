@@ -114,7 +114,7 @@ export default function SubmitPage() {
           <div className="field">
             <label>Website / Demo Link</label>
             <input
-              type="url"
+              type="text"
               placeholder="https://"
               required
               value={form.demo_link}
