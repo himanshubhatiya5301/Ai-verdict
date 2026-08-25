@@ -20,12 +20,20 @@ function getDomain(url) {
 export default function ModelCard({ model, rank, myVote, onVoted }) {
   const { user, signInWithGoogle } = useAuth();
   const [busy, setBusy] = useState(false);
-  const [imgError, setImgError] = useState(false);
+  const [logoStage, setLogoStage] = useState(0);
   const p = pct(model);
   const total = model.total_upvotes + model.total_downvotes;
 
   const domain = getDomain(model.demo_link);
-  const logoSrc = model.logo_url || (domain ? `https://logo.clearbit.com/${domain}?size=128` : null);
+  const sources = model.logo_url
+    ? [model.logo_url]
+    : domain
+    ? [
+        `https://logo.clearbit.com/${domain}?size=128`,
+        `https://www.google.com/s2/favicons?domain=${domain}&sz=128`,
+      ]
+    : [];
+  const logoSrc = sources[logoStage];
 
   async function castVote(type) {
     if (!user) {
@@ -55,8 +63,12 @@ export default function ModelCard({ model, rank, myVote, onVoted }) {
       {rank ? <div className="rank-badge">#{rank}</div> : null}
       <div className="card-top">
         <div className="logo">
-          {logoSrc && !imgError ? (
-            <img src={logoSrc} alt="" onError={() => setImgError(true)} />
+          {logoSrc ? (
+            <img
+              src={logoSrc}
+              alt=""
+              onError={() => setLogoStage((s) => s + 1)}
+            />
           ) : (
             model.name[0]
           )}
